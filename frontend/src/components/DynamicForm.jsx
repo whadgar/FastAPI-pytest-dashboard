@@ -13,7 +13,7 @@ function buildDefaultBody(requestBody) {
   return JSON.stringify(obj, null, 2);
 }
 
-export default function DynamicForm({ endpoint, onSubmit, loading }) {
+export default function DynamicForm({ endpoint, onSubmit, onAddToTest, loading }) {
   const [pathParams, setPathParams] = useState({});
   const [queryParams, setQueryParams] = useState({});
   const [bodyText, setBodyText] = useState("");
@@ -33,8 +33,7 @@ export default function DynamicForm({ endpoint, onSubmit, loading }) {
 
   if (!endpoint) return null;
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  function parseForm() {
     let body = null;
     if (bodyText.trim()) {
       try {
@@ -42,10 +41,22 @@ export default function DynamicForm({ endpoint, onSubmit, loading }) {
         setBodyError(null);
       } catch {
         setBodyError("Invalid JSON");
-        return;
+        return null;
       }
     }
-    onSubmit({ pathParams, queryParams, body });
+    return { pathParams, queryParams, body };
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const vals = parseForm();
+    if (vals) onSubmit(vals);
+  }
+
+  function handleAddToTest(e) {
+    e.preventDefault();
+    const vals = parseForm();
+    if (vals) onAddToTest?.(vals);
   }
 
   const hasBody = ["POST", "PUT", "PATCH"].includes(endpoint.method);
@@ -123,13 +134,24 @@ export default function DynamicForm({ endpoint, onSubmit, loading }) {
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-semibold rounded transition-colors"
-      >
-        {loading ? "Sending…" : "Send Request"}
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-semibold rounded transition-colors"
+        >
+          {loading ? "Sending…" : "Send Request"}
+        </button>
+        {onAddToTest && (
+          <button
+            type="button"
+            onClick={handleAddToTest}
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold rounded transition-colors border border-gray-600"
+          >
+            + Add to Test Cases
+          </button>
+        )}
+      </div>
     </form>
   );
 }

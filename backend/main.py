@@ -1,9 +1,18 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database.db import init_db
-from .routers import schema, proxy, generator, runner, traces, analytics
+from .routers import schema, proxy, generator, runner, traces, analytics, test_cases
 from .config import settings
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(levelname)-8s  %(message)s",
+    datefmt="%H:%M:%S",
+)
 
 app = FastAPI(title="API Dev Dashboard", version="1.0.0")
 
@@ -26,9 +35,15 @@ app.include_router(proxy.router,     prefix="/proxy",     tags=["Proxy"])
 app.include_router(generator.router, prefix="/tests",     tags=["Tests"])
 app.include_router(runner.router,    prefix="/tests",     tags=["Tests"])
 app.include_router(traces.router,    prefix="/traces",    tags=["Traces"])
-app.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
+app.include_router(analytics.router,   prefix="/analytics",   tags=["Analytics"])
+app.include_router(test_cases.router,  prefix="/test-cases",  tags=["TestCases"])
 
 
 @app.get("/", tags=["Health"])
 def root():
     return {"status": "ok", "service": "API Dev Dashboard"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("backend.main:app", host="127.0.0.1", port=settings.dashboard_port, reload=True)

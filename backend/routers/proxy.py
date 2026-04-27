@@ -1,9 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from typing import Any
-import httpx
+import re
 import time
+from typing import Any
+
+import httpx
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+
+def localhost_to_ip(url: str) -> str:
+    return re.sub(r"(?i)://localhost(?=[\:/]|$)", "://127.0.0.1", url)
 
 from ..database.db import get_db
 from ..services.tracer import save_trace
@@ -28,7 +34,7 @@ async def proxy_request(req: ProxyRequest, db: Session = Depends(get_db)):
     for key, val in req.path_params.items():
         resolved_path = resolved_path.replace("{" + key + "}", str(val))
 
-    url = req.base_url.rstrip("/") + resolved_path
+    url = localhost_to_ip(req.base_url.rstrip("/") + resolved_path)
 
     try:
         start = time.monotonic()

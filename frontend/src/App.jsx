@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import Dashboard from "./pages/Dashboard.jsx";
 import Explorer from "./pages/Explorer.jsx";
 import History from "./pages/History.jsx";
+import TestCases from "./pages/TestCases.jsx";
+import { useSchema } from "./hooks/useSchema.js";
 
 function NavItem({ to, label }) {
   return (
@@ -21,6 +23,8 @@ function NavItem({ to, label }) {
 }
 
 export default function App() {
+  const schemaProps = useSchema();
+
   return (
     <BrowserRouter>
       <div className="min-h-screen flex flex-col">
@@ -32,13 +36,15 @@ export default function App() {
             <NavItem to="/" label="Dashboard" />
             <NavItem to="/explorer" label="Explorer" />
             <NavItem to="/history" label="History" />
+            <NavItem to="/test-cases" label="Test Cases" />
           </nav>
         </header>
         <main className="flex-1 p-6">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/explorer" element={<Explorer />} />
+            <Route path="/explorer" element={<Explorer schemaProps={schemaProps} />} />
             <Route path="/history" element={<History />} />
+            <Route path="/test-cases" element={<TestCases />} />
           </Routes>
         </main>
       </div>

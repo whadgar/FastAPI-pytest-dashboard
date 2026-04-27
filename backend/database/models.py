@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text, JSON
 from sqlalchemy.orm import DeclarativeBase
 from datetime import datetime
 import uuid
@@ -42,3 +42,27 @@ class TestRun(Base):
     failed       = Column(Integer, default=0)
     skipped      = Column(Integer, default=0)
     target_url   = Column(String, nullable=True)
+
+
+class TestCase(Base):
+    __tablename__ = "test_cases"
+
+    id               = Column(Integer, primary_key=True, autoincrement=True)
+    test_case_id     = Column(String, unique=True, default=lambda: str(uuid.uuid4()))
+    name             = Column(String, nullable=False)
+    description      = Column(Text, nullable=True)
+    endpoint         = Column(String, nullable=False)
+    method           = Column(String, nullable=False)
+    base_url         = Column(String, nullable=False)
+    path_params      = Column(Text, default="{}")   # JSON string
+    query_params     = Column(Text, default="{}")   # JSON string
+    body             = Column(Text, default="{}")   # JSON string
+    expected_status  = Column(Integer, default=200)
+    tag              = Column(String, nullable=True)
+    suite            = Column(String, nullable=True)
+    status           = Column(String, default="draft")  # "draft" | "confirmed"
+    last_run_at      = Column(DateTime, nullable=True)
+    last_run_passed  = Column(Boolean, nullable=True)
+    last_run_status  = Column(Integer, nullable=True)
+    created_at       = Column(DateTime, default=datetime.utcnow)
+    updated_at       = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
