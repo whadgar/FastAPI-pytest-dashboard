@@ -8,6 +8,16 @@ Point it at any OpenAPI-compliant API, explore endpoints interactively, save tes
 
 ---
 
+## Screenshots
+
+![Overview](assets/screenshots/Overview-Page-1.png)
+![Explorer](assets/screenshots/Overview-UI-2.png)
+![Test Cases](assets/screenshots/Overview-UI-3.png)
+![History](assets/screenshots/UI-Image-4.png)
+![Analytics](assets/screenshots/UI-Image-5.png)
+
+---
+
 ## Table of Contents
 
 - [Features](#features)
